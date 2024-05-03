@@ -43,7 +43,7 @@ class DatabaseManager(object):
         :return:
         """
         with self._connection.cursor() as cursor:
-            cursor.execute("INSERT INTO 'profiles' VALUES (?, ?, ?, ?);", (username, application, email, password, notes))
+            cursor.execute("INSERT INTO 'profiles' (username, application, email, password, notes) VALUES (?, ?, ?, ?);", (username, application, email, password, notes))
             self._connection.commit()
 
     def get_profile(self, query: str) -> tuple | None:
@@ -53,7 +53,7 @@ class DatabaseManager(object):
         :return:
         """
         with self._connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM 'profiles' WHERE 'username' LIKE '%?%' OR 'application' LIKE '%?%' OR 'email' LIKE '%?%';", (query, query, query,))
+            cursor.execute("SELECT (username, application, email, password, notes) FROM 'profiles' WHERE 'username' LIKE '%?%' OR 'application' LIKE '%?%' OR 'email' LIKE '%?%';", (query, query, query,))
             return cursor.fetchall()
 
     def _close_connection(self):
