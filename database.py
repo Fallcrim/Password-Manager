@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Connection
+from typing import List, Tuple
 
 from encryption import EncryptionHandler
 
@@ -46,9 +47,9 @@ class DatabaseManager(object):
             cursor.execute("INSERT INTO 'profiles' (username, application, email, password, notes) VALUES (?, ?, ?, ?);", (username, application, email, password, notes))
             self._connection.commit()
 
-    def get_profile(self, query: str) -> tuple | None:
+    def query_profiles(self, query: str) -> List[Tuple[str, str, str, str, str]]:
         """
-        Fetches alle profiles, which have the query either in their username, application or email field
+        Fetches all profiles, which have the query either in their username, application or email field
         :param query:
         :return:
         """
