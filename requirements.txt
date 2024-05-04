@@ -1,0 +1,2 @@
+textual>=0.58.1
+cryptography>=42.0.5
