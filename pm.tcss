@@ -8,8 +8,8 @@
 
 .new-profile-dialog-container {
     padding: 0 1;
-    width: 60;
-    height: 16;
+    width: 40%;
+    height: 80%;
     border: thick $background 80%;
     background: $surface;
 }
@@ -41,4 +41,16 @@
 
 .dialog {
     align: center middle;
+}
+
+ListView {
+    align: center top;
+}
+
+ListItem {
+    height: 3;
+    width: 100%;
+    margin: 2 2 1 2;
+    padding: 0 0 0 2;
+    align: left middle;
 }

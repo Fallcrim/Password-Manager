@@ -7,7 +7,6 @@ class Profile:
     application: str
     email: str
     password: str
-    notes: str
 
     def __str__(self):
         return f"{self.application} - {self.username}"

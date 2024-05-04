@@ -6,9 +6,9 @@ from encryption import EncryptionHandler
 
 
 class DatabaseManager(object):
-    def __init__(self, file_path: str, database_password: str):
+    def __init__(self, file_path: str):
         self._file_path = file_path
-        self._database_password = database_password
+        # self._database_password = database_password
         self._connection = self._connect()
         self._create_tables()
 
@@ -17,11 +17,11 @@ class DatabaseManager(object):
         First encrypts and then returns an SQLite3 Connection object
         :return:
         """
-        encryption_handler: EncryptionHandler = EncryptionHandler(self._database_password.encode())
-        with open(self._file_path, "rb") as in_file:
-            enc_data: bytes = encryption_handler.decrypt(in_file.read())
-        with open(self._file_path, "wb") as outfile:
-            outfile.write(enc_data)
+        # encryption_handler: EncryptionHandler = EncryptionHandler(self._database_password.encode())
+        # with open(self._file_path, "rb") as in_file:
+        #     enc_data: bytes = encryption_handler.decrypt(in_file.read())
+        # with open(self._file_path, "wb") as outfile:
+        #     outfile.write(enc_data)
         return sqlite3.connect(self._file_path)
 
     def _create_tables(self) -> None:
@@ -29,33 +29,36 @@ class DatabaseManager(object):
         Creates the initial table required if the table is not already present
         :return:
         """
-        with self._connection.cursor() as cursor:
-            cursor.execute("CREATE TABLE IF NOT EXISTS 'profiles' (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, application TEXT, email TEXT, password TEXT, notes TEXT);")
-            self._connection.commit()
+        cursor = self._connection.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS 'profiles' (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, application TEXT, email TEXT, password TEXT);")
+        self._connection.commit()
+        cursor.close()
 
-    def insert_profile(self, username: str, application: str, email: str, password: str, notes: str) -> None:
+    def insert_profile(self, username: str, application: str, email: str, password: str) -> None:
         """
         Inserts a new profile into the database, which contains account information the user wants to store
         :param username:
         :param application:
         :param email:
         :param password:
-        :param notes:
         :return:
         """
-        with self._connection.cursor() as cursor:
-            cursor.execute("INSERT INTO 'profiles' (username, application, email, password, notes) VALUES (?, ?, ?, ?);", (username, application, email, password, notes))
-            self._connection.commit()
+        cursor = self._connection.cursor()
+        cursor.execute("INSERT INTO 'profiles' (username, application, email, password) VALUES (?, ?, ?, ?);", (username, application, email, password))
+        self._connection.commit()
+        cursor.close()
 
-    def query_profiles(self, query: str) -> List[Tuple[str, str, str, str, str]]:
+    def query_profiles(self, query: str) -> List[Tuple[str, str, str, str]]:
         """
         Fetches all profiles, which have the query either in their username, application or email field
         :param query:
         :return:
         """
-        with self._connection.cursor() as cursor:
-            cursor.execute("SELECT (username, application, email, password, notes) FROM 'profiles' WHERE 'username' LIKE '%?%' OR 'application' LIKE '%?%' OR 'email' LIKE '%?%';", (query, query, query,))
-            return cursor.fetchall()
+        cursor = self._connection.cursor()
+        cursor.execute(f"SELECT username, application, email, password FROM 'profiles' WHERE username LIKE '%{query}%';")
+        result = cursor.fetchall()
+        cursor.close()
+        return result
 
     def _close_connection(self):
         """
@@ -63,7 +66,7 @@ class DatabaseManager(object):
         :return:
         """
         self._connection.close()
-        self._encrypt_database()
+        # self._encrypt_database()
 
     def _encrypt_database(self):
         """
@@ -75,3 +78,6 @@ class DatabaseManager(object):
             enc_data: bytes = encryption_handler.encrypt(in_file.read())
         with open(self._file_path, "wb") as outfile:
             outfile.write(enc_data)
+
+    def __del__(self):
+        self._close_connection()
