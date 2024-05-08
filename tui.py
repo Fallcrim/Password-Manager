@@ -4,8 +4,8 @@ from textual import work
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Header, ListView, ListItem, Label
 
-from database import DatabaseManager
-from config import load_config, save_config
+from utils.database import DatabaseManager
+from utils.config import load_config, save_config
 from components.dialogs import PasswordDialog
 from components.dialogs import OpenDatabaseDialog
 from components.dialogs import ProfileEntryDialog

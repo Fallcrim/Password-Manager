@@ -2,14 +2,17 @@ import sqlite3
 from sqlite3 import Connection
 from typing import List, Tuple
 
+import supabase_auth
+
 from encryption import EncryptionHandler
 
 
 class DatabaseManager(object):
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str, config: dict):
         self._file_path = file_path
+        self.app_config = config
         # self._database_password = database_password
-        self._connection = self._connect()
+        self.connection = supabase_auth.SyncGoTrueClient(url="")
         self._create_tables()
 
     def _connect(self) -> Connection:
